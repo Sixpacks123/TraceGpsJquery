@@ -26,7 +26,8 @@ else {
         if ( empty ($_POST ["txtNouveauMdp"]) == true)  $nouveauMdp = "";  else   $nouveauMdp = $_POST ["txtNouveauMdp"];
         if ( empty ($_POST ["txtConfirmationMdp"]) == true)  $confirmationMdp = "";  else   $confirmationMdp = $_POST ["txtConfirmationMdp"];
         if ( empty ($_POST ["caseAfficherMdp"]) == true)  $afficherMdp = 'off';  else   $afficherMdp = $_POST ["caseAfficherMdp"];
-        
+
+
         if ( $nouveauMdp == "" || $confirmationMdp == "" ) {
             // si les données sont incomplètes, réaffichage de la vue avec un message explicatif
             $message = 'Données incomplètes !';
@@ -51,40 +52,50 @@ else {
                     include_once ('vues/VueChangerDeMdp.php');
                 }
                 else {
-                    // connexion du serveur web à la base MySQL
-                    include_once ('modele/DAO.class.php');
-                    $dao = new DAO();
-                    
-                    // enregistre le nouveau mot de passe de l'utilisateur dans la bdd après l'avoir codé en SHA1
-                    $ok = $dao->modifierMdpUtilisateur ($pseudo, $nouveauMdp);
-                    if ( ! $ok ) {
-                        // si l'enregistrement a échoué, réaffichage de la vue avec un message explicatif
-                        $message = "Problème lors de l'enregistrement du mot de passe !";
+
+                    if(  Outils::estUnMdpValide($nouveauMdp) == false){
+                        $message = 'Le mot de passe doit comporter au moins 8 caractères, dont au moins une lettre minuscule,
+une lettre majuscule et un chiffre !';
                         $typeMessage = 'avertissement';
                         $themeFooter = $themeProbleme;
-                        unset($dao);		// fermeture de la connexion à MySQL
                         include_once ('vues/VueChangerDeMdp.php');
-                    }
-                    else {
-                        // envoi d'un mail à l'utilisateur avec son nouveau mot de passe
-                        $ok = $dao->envoyerMdp ($pseudo, $nouveauMdp);
+                    }else{
+                        // connexion du serveur web à la base MySQL
+                        include_once ('modele/DAO.class.php');
+                        $dao = new DAO();
+
+                        // enregistre le nouveau mot de passe de l'utilisateur dans la bdd après l'avoir codé en SHA1
+                        $ok = $dao->modifierMdpUtilisateur ($pseudo, $nouveauMdp);
                         if ( ! $ok ) {
-                            // si l'envoi de mail a échoué, réaffichage de la vue avec un message explicatif
-                            $message = "Enregistrement effectué.<br>L'envoi du mail de confirmation a rencontré un problème.";
+                            // si l'enregistrement a échoué, réaffichage de la vue avec un message explicatif
+                            $message = "Problème lors de l'enregistrement du mot de passe !";
                             $typeMessage = 'avertissement';
                             $themeFooter = $themeProbleme;
                             unset($dao);		// fermeture de la connexion à MySQL
                             include_once ('vues/VueChangerDeMdp.php');
                         }
                         else {
-                            // tout a bien fonctionné
-                            $message = "Enregistrement effectué.<br>Vous allez recevoir un mail de confirmation.";
-                            $typeMessage = 'information';
-                            $themeFooter = $themeNormal;
-                            unset($dao);		// fermeture de la connexion à MySQL
-                            include_once ('vues/VueChangerDeMdp.php');
+                            // envoi d'un mail à l'utilisateur avec son nouveau mot de passe
+                            $ok = $dao->envoyerMdp ($pseudo, $nouveauMdp);
+                            if ( ! $ok ) {
+                                // si l'envoi de mail a échoué, réaffichage de la vue avec un message explicatif
+                                $message = "Enregistrement effectué.<br>L'envoi du mail de confirmation a rencontré un problème.";
+                                $typeMessage = 'avertissement';
+                                $themeFooter = $themeProbleme;
+                                unset($dao);		// fermeture de la connexion à MySQL
+                                include_once ('vues/VueChangerDeMdp.php');
+                            }
+                            else {
+                                // tout a bien fonctionné
+                                $message = "Enregistrement effectué.<br>Vous allez recevoir un mail de confirmation.";
+                                $typeMessage = 'information';
+                                $themeFooter = $themeNormal;
+                                unset($dao);		// fermeture de la connexion à MySQL
+                                include_once ('vues/VueChangerDeMdp.php');
+                            }
                         }
                     }
+
                 }
             }
         }
