@@ -25,7 +25,7 @@ $FREQUENCE_AFFICHAGE = 60; // 60 sec ou 1 mn
 // adresse de l'émetteur lors d'un envoi de courriel
 $ADR_MAIL_EMETTEUR = "delasalle.sio.crib@gmail.com";
 // adresse de l'API web en localhost -----------------------------------------------------------------------
-$ADR_SERVICE_WEB = "http://localhost/ws-php-aubin/traceGpsJquery/api/";
+$ADR_SERVICE_WEB = "http://localhost/ws-php-aubin/traceGpsjquery/api/";
 // adresse de l'API web chez OVH ---------------------------------------------------------------------------
 //$ADR_SERVICE_WEB = "http://sio.lyceedelasalle.fr/tracegps/api/";
 // ATTENTION : on ne met pas de balise de fin de script pour ne pas prendre le risque

@@ -300,7 +300,7 @@ class Outils
     public static function  estUnMdpValide($mdp)
     {
         $EXPRESSION = "#^(?=.*[a-z].*$)(?=.*[A-Z].*$)(?=.*[0-9].*$)(?=.{8,}$)#";
-        if (preg_match($EXPRESSION, $mdp) == true) return false; else return true;
+        if (preg_match($EXPRESSION, $mdp) == false) return false; else return true;
 
 }
 } // fin de la classe Outils

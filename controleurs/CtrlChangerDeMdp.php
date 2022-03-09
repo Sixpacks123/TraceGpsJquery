@@ -3,7 +3,7 @@
 // fichier : controleurs/CtrlChangerDeMdp.php
 // Rôle : traiter la demande de changement de mot de passe
 // Dernière mise à jour : 01/11/2021 par dP
-
+include_once ('modele/Outils.class.php');
 // on vérifie si le demandeur de cette action est bien authentifié
 if ( $_SESSION['niveauConnexion'] == 0) {
     // si le demandeur n'est pas authentifié, il s'agit d'une tentative d'accès frauduleux
@@ -53,45 +53,43 @@ else {
                 }
                 else {
 
-                    if(  Outils::estUnMdpValide($nouveauMdp) == false){
+                    if (Outils::estUnMdpValide($nouveauMdp) == false) {
                         $message = 'Le mot de passe doit comporter au moins 8 caractères, dont au moins une lettre minuscule,
 une lettre majuscule et un chiffre !';
                         $typeMessage = 'avertissement';
                         $themeFooter = $themeProbleme;
-                        include_once ('vues/VueChangerDeMdp.php');
-                    }else{
+                        include_once('vues/VueChangerDeMdp.php');
+                    } else {
                         // connexion du serveur web à la base MySQL
-                        include_once ('modele/DAO.class.php');
+                        include_once('modele/DAO.class.php');
                         $dao = new DAO();
 
                         // enregistre le nouveau mot de passe de l'utilisateur dans la bdd après l'avoir codé en SHA1
-                        $ok = $dao->modifierMdpUtilisateur ($pseudo, $nouveauMdp);
-                        if ( ! $ok ) {
+                        $ok = $dao->modifierMdpUtilisateur($pseudo, $nouveauMdp);
+                        if (!$ok) {
                             // si l'enregistrement a échoué, réaffichage de la vue avec un message explicatif
                             $message = "Problème lors de l'enregistrement du mot de passe !";
                             $typeMessage = 'avertissement';
                             $themeFooter = $themeProbleme;
-                            unset($dao);		// fermeture de la connexion à MySQL
-                            include_once ('vues/VueChangerDeMdp.php');
-                        }
-                        else {
+                            unset($dao);        // fermeture de la connexion à MySQL
+                            include_once('vues/VueChangerDeMdp.php');
+                        } else {
                             // envoi d'un mail à l'utilisateur avec son nouveau mot de passe
-                            $ok = $dao->envoyerMdp ($pseudo, $nouveauMdp);
-                            if ( ! $ok ) {
+                            $ok = $dao->envoyerMdp($pseudo, $nouveauMdp);
+                            if (!$ok) {
                                 // si l'envoi de mail a échoué, réaffichage de la vue avec un message explicatif
                                 $message = "Enregistrement effectué.<br>L'envoi du mail de confirmation a rencontré un problème.";
                                 $typeMessage = 'avertissement';
                                 $themeFooter = $themeProbleme;
-                                unset($dao);		// fermeture de la connexion à MySQL
-                                include_once ('vues/VueChangerDeMdp.php');
-                            }
-                            else {
+                                unset($dao);        // fermeture de la connexion à MySQL
+                                include_once('vues/VueChangerDeMdp.php');
+                            } else {
                                 // tout a bien fonctionné
                                 $message = "Enregistrement effectué.<br>Vous allez recevoir un mail de confirmation.";
                                 $typeMessage = 'information';
                                 $themeFooter = $themeNormal;
-                                unset($dao);		// fermeture de la connexion à MySQL
-                                include_once ('vues/VueChangerDeMdp.php');
+                                unset($dao);        // fermeture de la connexion à MySQL
+                                include_once('vues/VueChangerDeMdp.php');
                             }
                         }
                     }

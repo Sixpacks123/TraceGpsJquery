@@ -14,7 +14,24 @@ else {
     // connexion du serveur web à la base MySQL
     include_once ('modele/DAO.class.php');
     $dao = new DAO();
-    
-    // affiche la vue
-    include_once ('vues/VueMenu.php');
+    include_once ('modele/Outils.class.php');
+    if ( Outils::estUnMdpValide($_SESSION['mdp']) == false){
+        // affiche la vue
+        $message = 'Pour des raisons de sécurité, nous vous invitons à changer votre mot de passe. Le
+nouveau mot de passe doit comporter au moins 8 caractères, dont au moins une lettre
+minuscule, une lettre majuscule et un chiffre !';
+        $typeMessage = 'avertissement';
+        $themeFooter = $themeProbleme;
+        $nouveauMdp ='';
+        $confirmationMdp= '';
+        include_once ('vues/VueChangerDeMdp.php');
+    }else{
+        // connexion du serveur web à la base MySQL
+        include_once ('modele/DAO.class.php');
+        $dao = new DAO();
+
+        // affiche la vue
+        include_once ('vues/VueMenu.php');
+    }
+
 }
