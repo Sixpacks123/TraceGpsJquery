@@ -1,7 +1,7 @@
 <?php
 // Projet TraceGPS - services web
 // fichier : api/services/SupprimerUnUtilisateur.php
-// Dernière mise à jour : 3/7/2021 par dP
+// Dernière mise à jour : 3/7/2019 par Jim
 
 // Rôle : ce service permet à un administrateur de supprimer un utilisateur (à condition qu'il ne possède aucune trace enregistrée)
 // Le service web doit recevoir 4 paramètres :

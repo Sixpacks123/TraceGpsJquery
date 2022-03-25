@@ -1,4 +1,17 @@
 <?php
+// Projet TraceGPS - services web
+// fichier :  api/services/DemanderMdp.php
+// Dernière mise à jour : 3/7/2019 par Jim
+
+// Rôle : ce service génère un nouveau mot de passe, l'enregistre en sha1 et l'envoie par mail à l'utilisateur
+// Le service web doit recevoir 2 paramètres :
+//     pseudo : le pseudo de l'utilisateur
+//     lang : le langage du flux de données retourné ("xml" ou "json") ; "xml" par défaut si le paramètre est absent ou incorrect
+// Le service retourne un flux de données XML ou JSON contenant un compte-rendu d'exécution
+
+// Les paramètres doivent être passés par la méthode GET :
+//     http://<hébergeur>/tracegps/api/DemanderMdp?pseudo=europa&lang=xml
+
 // connexion du serveur web à la base MySQL
 $dao = new DAO();
 
@@ -16,42 +29,41 @@ if ($this->getMethodeRequete() != "GET")
 }
 else {
     // Les paramètres doivent être présents
-    if ( $pseudo == "" )
+    if ( $pseudo == "")
     {	$msg = "Erreur : données incomplètes.";
         $code_reponse = 400;
     }
     else
-    {	if (!$dao->existePseudoUtilisateur($pseudo)) {
-        $msg = "Erreur : le pseudo n'existe pas.";
-        $code_reponse = 401;
-    }
-        else
-        {
-            $nouveauMdp = Outils::creerMdp();
-            $ok = $dao->modifierMdpUtilisateur($pseudo, $nouveauMdp);
-            if(! $ok )
-            {
-                $msg = "Erreur : problème lors de l'enregistrement du mot de passe.";
-                $code_reponse = 500;
-            }
-            else
-            {
-                $ok2 = $dao->envoyerMdp($pseudo, $nouveauMdp);
-                if (! $ok2)
-                {  $msg="Enregistrement effectué ; l'envoi du courriel de confirmation a rencontré un problème.";
-                    $code_reponse = 500;
-                }
-
-                else {
-                    $msg="Vous allez recevoir un courriel avec votre nouveau mot de passe.";
-                    $code_reponse=200;
-                }
-            }
+    {	if ( ! $dao->existePseudoUtilisateur($pseudo) ) {
+    		$msg = "Erreur : pseudo inexistant.";
+    		$code_reponse = 400;
         }
+    	else {
+    		// génération d'un nouveau mot de passe
+    		$nouveauMdp = Outils::creerMdp();
+    		// enregistre le nouveau mot de passe de l'utilisateur dans la bdd après l'avoir codé en MD5
+    		$ok = $dao->modifierMdpUtilisateur ($pseudo, $nouveauMdp);
+    	
+    		if ( ! $ok ) {
+    		    $msg = "Erreur : problème lors de l'enregistrement du mot de passe.";
+    		    $code_reponse = 500;
+    		}
+    		else {
+    		    // envoie un courriel  à l'utilisateur avec son nouveau mot de passe 
+    		    $ok = $dao->envoyerMdp($pseudo, $nouveauMdp);
+    		    if (! $ok) {
+        		    $msg = "Enregistrement effectué ; l'envoi du courriel  de confirmation a rencontré un problème.";
+        		    $code_reponse = 500;
+    		    }
+    		    else {
+        		    $msg = "Vous allez recevoir un courriel avec votre nouveau mot de passe.";
+        		    $code_reponse = 200;
+    		    }
+    		}
+    	}
     }
 }
-
-// ferme la connexion à MySQL :
+// ferme la connexion à MySQL
 unset($dao);
 
 // création du flux en sortie
@@ -64,7 +76,6 @@ else {
     $donnees = creerFluxJSON ($msg);
 }
 
-
 // envoi de la réponse HTTP
 $this->envoyerReponse($code_reponse, $content_type, $donnees);
 
@@ -75,40 +86,31 @@ exit;
 
 // création du flux XML en sortie
 function creerFluxXML($msg)
-{
-    /* Exemple de code XML
-     <?xml version="1.0" encoding="UTF-8"?>
-     <!--Service web ChangerDeMdp - BTS SIO - Lycée De La Salle - Rennes-->
-     <data>
-     <reponse>Erreur : authentification incorrecte.</reponse>
-     </data>
-     */
-
-    // crée une instance de DOMdocument (DOM : Document Object Model)
-    $doc = new DOMDocument();
-
-    // specifie la version et le type d'encodage
-    $doc->xmlversion = '1.0';
-    $doc->encoding = 'UTF-8';
-
-    // crée un commentaire et l'encode en UTF-8
-    $elt_commentaire = $doc->createComment('Service web DemanderDeMdp - BTS SIO - Lycée De La Salle - Rennes');
-    // place ce commentaire à la racine du document XML
-    $doc->appendChild($elt_commentaire);
-
-    // crée l'élément 'data' à la racine du document XML
-    $elt_data = $doc->createElement('data');
-    $doc->appendChild($elt_data);
-
-    // place l'élément 'reponse' juste après l'élément 'data'
-    $elt_reponse = $doc->createElement('reponse', $msg);
-    $elt_data->appendChild($elt_reponse);
-
-    // Mise en forme finale
-    $doc->formatOutput = true;
-
-    // renvoie le contenu XML
-    return $doc->saveXML();
+{	// crée une instance de DOMdocument (DOM : Document Object Model)
+	$doc = new DOMDocument();
+	
+	// specifie la version et le type d'encodage
+	$doc->version = '1.0';
+	$doc->encoding = 'UTF-8';
+	
+	// crée un commentaire et l'encode en UTF-8
+	$elt_commentaire = $doc->createComment('Service web DemanderMdp - BTS SIO - Lycée De La Salle - Rennes');
+	// place ce commentaire à la racine du document XML
+	$doc->appendChild($elt_commentaire);
+	
+	// crée l'élément 'data' à la racine du document XML
+	$elt_data = $doc->createElement('data');
+	$doc->appendChild($elt_data);
+	
+	// place l'élément 'reponse' juste après l'élément 'data'
+	$elt_reponse = $doc->createElement('reponse', $msg);
+	$elt_data->appendChild($elt_reponse);
+	
+	// Mise en forme finale
+	$doc->formatOutput = true;
+	
+	// renvoie le contenu XML
+	return $doc->saveXML();
 }
 
 // ================================================================================================
@@ -118,18 +120,18 @@ function creerFluxJSON($msg)
 {
     /* Exemple de code JSON
      {
-     "data": {
-     "reponse": "Erreur : authentification incorrecte."
-     }
+        "data": {
+            "reponse": "Erreur : pseudo inexistant."
+        }
      }
      */
-
+    
     // construction de l'élément "data"
     $elt_data = ["reponse" => $msg];
-
+    
     // construction de la racine
     $elt_racine = ["data" => $elt_data];
-
+    
     // retourne le contenu JSON (l'option JSON_PRETTY_PRINT gère les sauts de ligne et l'indentation)
     return json_encode($elt_racine, JSON_PRETTY_PRINT);
 }

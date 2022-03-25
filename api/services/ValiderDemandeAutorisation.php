@@ -1,7 +1,7 @@
 <?php
 // Projet TraceGPS - services web
 // fichier :  api/services/ValiderDemandeAutorisation.php
-// Dernière mise à jour : 3/7/2021 par dP
+// Dernière mise à jour : 3/7/2019 par Jim
 
 // Rôle : ce service web permet à un utilisateur destinataire d'accepter ou de rejeter une demande d'autorisation provenant d'un utilisateur demandeur
 // il envoie un mail au demandeur avec la décision de l'utilisateur destinataire

@@ -47,7 +47,7 @@ class Utilisateur
         $this->id = $unId;
         $this->pseudo = $unPseudo;
         $this->mdpSha1 = $unMdpSha1;
-        $this->adrMail =  Outils::estUneAdrMailValide($uneAdrMail);
+        $this->adrMail =  $uneAdrMail;
         $this->numTel =  Outils::corrigerTelephone($unNumTel);
         $this->niveau =  $unNiveau;
         $this->dateCreation = $uneDateCreation;
@@ -115,11 +115,6 @@ class Utilisateur
         $this->mdpSha1 = $mdpSha1;
     }
 
-    public function setAdrMail($adrMail)
-    {
-        $this->adrMail = Outils::estUneAdrMailValide($adrMail);
-    }
-
     public function setNumTel($numTel)
     {
         $this->numTel = Outils::estUnNumTelValide($numTel);
@@ -134,6 +129,8 @@ class Utilisateur
     {
         $this->dateCreation = Outils::corrigerDate($dateCreation);
     }
+
+    public function setAdrMail($uneAdrMail) {$this->adrMail = $uneAdrMail;}
 
     public function setNbTraces($nbTraces)
     {

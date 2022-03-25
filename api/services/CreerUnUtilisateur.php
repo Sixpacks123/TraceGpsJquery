@@ -1,7 +1,7 @@
 <?php
 // Projet TraceGPS - services web
 // fichier :  api/services/CreerUnUtilisateur.php
-// Dernière mise à jour : 3/7/2021 par dP
+// Dernière mise à jour : 3/7/2019 par Jim
 
 // Rôle : ce service permet à un utilisateur de se créer un compte
 // Le service web doit recevoir 4 paramètres :

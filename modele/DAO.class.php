@@ -278,7 +278,7 @@ class DAO
     // supprime l'utilisateur $pseudo dans la bdd, ainsi que ses traces et ses autorisations
     // fournit true si l'effacement s'est bien effectuÃ©, false sinon
     // modifiÃ© par Jim le 9/1/2018
-    /*public function supprimerUnUtilisateur($pseudo) {
+    public function supprimerUnUtilisateur($pseudo) {
         $unUtilisateur = $this->getUnUtilisateur($pseudo);
         if ($unUtilisateur == null) {
             return false;
@@ -311,27 +311,26 @@ class DAO
             $ok = $req2->execute();
             return $ok;
         }
-    }*/
+    }
 
 
     // envoie un mail Ã  l'utilisateur $pseudo avec son nouveau mot de passe $nouveauMdp
     // retourne true si envoi correct, false en cas de problÃ¨me d'envoi
     // modifiÃ© par Jim le 9/1/2018
-    public function envoyerMdp($pseudo, $nouveauMdp)
-    {
+    public function envoyerMdp($pseudo, $nouveauMdp) {
         global $ADR_MAIL_EMETTEUR;
         // si le pseudo n'est pas dans la table tracegps_utilisateurs :
-        if ($this->existePseudoUtilisateur($pseudo) == false) return false;
+        if ( $this->existePseudoUtilisateur($pseudo) == false ) return false;
 
         // recherche de l'adresse mail
         $adrMail = $this->getUnUtilisateur($pseudo)->getAdrMail();
 
-        // envoie un mail Ã  l'utilisateur avec son nouveau mot de passe
-        $sujet = "Modification de votre mot de passe d'accÃ¨s au service TraceGPS";
-        $message = "Cher(chÃ¨re) " . $pseudo . "\n\n";
-        $message .= "Votre mot de passe d'accÃ¨s au service service TraceGPS a Ã©tÃ© modifiÃ©.\n\n";
-        $message .= "Votre nouveau mot de passe est : " . $nouveauMdp;
-        $ok = Outils::envoyerMail($adrMail, $sujet, $message, $ADR_MAIL_EMETTEUR);
+        // envoie un mail à l'utilisateur avec son nouveau mot de passe
+        $sujet = "Modification de votre mot de passe d'accès au service TraceGPS";
+        $message = "Cher(chère) " . $pseudo . "\n\n";
+        $message .= "Votre mot de passe d'accès au service service TraceGPS a été modifié.\n\n";
+        $message .= "Votre nouveau mot de passe est : " . $nouveauMdp ;
+        $ok = Outils::envoyerMail ($adrMail, $sujet, $message, $ADR_MAIL_EMETTEUR);
         return $ok;
     }
 
@@ -731,23 +730,40 @@ class DAO
 
     }
 
+    public function creerUneTrace($uneTrace) {
 
-    public function creerUneTrace($uneTrace ) {
-        // on teste si l'utilisateur existe déjà
 
         // préparation de la requête
         $txt_req1 = "insert into tracegps_traces (dateDebut, dateFin, terminee, idUtilisateur)";
         $txt_req1 .= " values (:dateDebut, :dateFin, :terminee, :idUtilisateur)";
         $req1 = $this->cnx->prepare($txt_req1);
         // liaison de la requête et de ses paramètres
-        $req1->bindValue("dateDebut", utf8_decode($uneTrace->getDateHeureDebut()), PDO::PARAM_STR);
-        $req1->bindValue("dateFin", utf8_decode($uneTrace->getDateHeureFin()), PDO::PARAM_STR);
-        $req1->bindValue("terminee", utf8_decode($uneTrace->getTerminee()), PDO::PARAM_INT);
-        $req1->bindValue("idUtilisateur", utf8_decode($uneTrace->getIdUtilisateur()), PDO::PARAM_INT);
+        $req1->bindValue(":dateDebut", utf8_encode($uneTrace->getDateHeureDebut()), PDO::PARAM_STR);
+
+        if($uneTrace->getTerminee() == false)
+        {
+            $req1->bindValue("dateFin", null, PDO::PARAM_NULL);
+            $req1->bindValue("terminee", 0 , PDO::PARAM_INT);
+
+        }
+        if($uneTrace->getTerminee() == true)
+        {
+            $req1->bindValue("dateFin", $uneTrace->getDateHeureFin(), PDO::PARAM_STR);
+            $req1->bindValue("terminee", 1 , PDO::PARAM_INT);
+        }
+
+
+        $req1->bindValue("idUtilisateur", utf8_encode($uneTrace->getIdUtilisateur()), PDO::PARAM_INT);
+
         // exécution de la requête
         $ok = $req1->execute();
+
+
+        //print_r($req1->errorInfo());
+
+
         // sortir en cas d'échec
-        if ( ! $ok) { return false; }
+        if ( ! $ok) return false;
 
         // recherche de l'identifiant (auto_increment) qui a été attribué à la trace
         $unId = $this->cnx->lastInsertId();
@@ -757,38 +773,65 @@ class DAO
 
 
     public function supprimerUneTrace($idTrace) {
-        $txt_req = "DELETE FROM tracegps_points where idTrace = :id;DELETE FROM tracegps_traces where id = :id";
-        $req = $this->cnx->prepare($txt_req);
-        // liaison de la requête et de ses paramètres
-        $req->bindValue("id", $idTrace, PDO::PARAM_STR);
-        $ok = $req->execute();
-        if ( ! $ok) { return false; } else return true;
+        $uneTrace = $this->getUneTrace($idTrace);
+        if ($uneTrace == null) {
+            return false;
+        }
+        else {
+            $idTrace = $uneTrace->getId();
+
+            // préparation de la requête de suppression des points
+            $txt_req1 = "delete from tracegps_points" ;
+            $txt_req1 .= " where idTrace = :idTrace";
+            $req1 = $this->cnx->prepare($txt_req1);
+            // liaison de la requête et de ses paramètres
+            $req1->bindValue("idTrace", utf8_decode($idTrace), PDO::PARAM_INT);
+            // exécution de la requête
+            $ok = $req1->execute();
+
+            // préparation de la requête de suppression de l'utilisateur
+            $txt_req2 = "delete from tracegps_traces" ;
+            $txt_req2 .= " where id = :idTrace";
+            $req2 = $this->cnx->prepare($txt_req2);
+            // liaison de la requête et de ses paramètres
+            $req2->bindValue("idTrace", utf8_decode($idTrace), PDO::PARAM_STR);
+            // exécution de la requête
+            $ok = $req2->execute();
+            return $ok;
+        }
     }
 
 
-    public function terminerUneTrace($idTrace){
+    public function terminerUneTrace($idTrace) {
+        if ( ! DAO::getUneTrace($idTrace)) return false;
 
+        $uneTrace = DAO::getUneTrace($idTrace);
 
-        $uneTrace = $this->getUneTrace($idTrace);
+        $txt_req = "UPDATE tracegps_traces";
+        $txt_req .= " SET terminee = 1,";
 
-        if(sizeof($uneTrace->getLesPointsDeTrace())==0) { $dateFin = date('Y-m-d H:i:s'); }
+        if( sizeof($uneTrace->getLesPointsDeTrace()) != 0) {
+            $dernierPoint = $uneTrace->getLesPointsDeTrace()[sizeof($uneTrace->getLesPointsDeTrace()) - 1];
+            $fin = $dernierPoint->getDateHeure();
 
+            $txt_req .= " dateFin = :fin";
+            $txt_req .= " where id = :idTrace";
+
+            $req = $this->cnx->prepare($txt_req);
+            $req->bindValue("fin", $fin, PDO::PARAM_STR);
+        }
         else {
-
-            $DernierPoint = $uneTrace->getLesPointsDeTrace()[$uneTrace->getNombrePoints()-1];
-            $dateFin = $DernierPoint->getDateHeure();
+            $txt_req .= " dateFin = NOW()";
+            $txt_req .= " where id = :idTrace";
+            $req = $this->cnx->prepare($txt_req);
         }
 
+        // liaison de la requête et de ses paramètres
+        $req->bindValue("idTrace", utf8_decode($idTrace), PDO::PARAM_INT);
 
-        $dateFin = $uneTrace->getDateheureFin();
-
-
-        $txt_req = "update tracegps_traces set datefin = :datefin, terminee = 1";
-        $txt_req .= " where id = :id";
-        $req = $this->cnx->prepare($txt_req);
-        $req->bindValue("id", $idTrace, PDO::PARAM_INT);
-        $req->bindValue("datefin", $dateFin, PDO::PARAM_STR);
+        // éxécution requête
         $ok = $req->execute();
+
         return $ok;
     }
 }

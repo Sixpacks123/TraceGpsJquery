@@ -61,11 +61,11 @@ else {
                 $contenuMail .= "Son message : " . $texteMessage . "\n\n";
                 
                 $contenuMail .= "Pour accepter la demande, cliquez sur ce lien :\n";
-                $contenuMail .= $ADR_SERVICE_WEB . "ValiderDemandeAutorisation.php?a=" . $utilisateurDestinataire->getMdpSha1();
+                $contenuMail .= $ADR_SERVICE_WEB . "ValiderDemandeAutorisation?a=" . $utilisateurDestinataire->getMdpSha1();
                 $contenuMail .= "&b=" . $utilisateurDestinataire->getPseudo() . "&c=" . $utilisateurDemandeur->getPseudo() . "&d=1";
                 $contenuMail .= "\n\n";
                 $contenuMail .= "Pour rejeter la demande, cliquez sur ce lien :\n";
-                $contenuMail .= $ADR_SERVICE_WEB . "ValiderDemandeAutorisation.php?a=" . $utilisateurDestinataire->getMdpSha1();
+                $contenuMail .= $ADR_SERVICE_WEB . "ValiderDemandeAutorisation?a=" . $utilisateurDestinataire->getMdpSha1();
                 $contenuMail .= "&b=" . $utilisateurDestinataire->getPseudo() . "&c=" . $utilisateurDemandeur->getPseudo() . "&d=0";
                 
                 $ok = Outils::envoyerMail($adrMail, $sujetMail, $contenuMail, $ADR_MAIL_EMETTEUR);

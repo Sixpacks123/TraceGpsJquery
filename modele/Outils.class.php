@@ -219,7 +219,6 @@ class Outils
             else return false;
 	    }
 	}
-	
 	// La fonction estUnCodePostalValide($codePostalAvalider) fournit true si le code postal reçu en paramètre est correct 
 	// (il doit comporter 5 chiffres), false sinon
 	// Dernière mise à jour : 11/12/2017 par JM CARTRON

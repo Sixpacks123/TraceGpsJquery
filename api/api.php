@@ -2,9 +2,9 @@
 // Projet TraceGPS - services web
 // Fichier : api/api.php
 // La classe Api hérite de la classe Rest (fichier api/rest.php)
-// Dernière mise à jour : 3/7/2021 par dP
+// Dernière mise à jour : 3/7/2018 par Jim
 
-include_once("rest.php");
+include_once ("rest.php");
 include_once ('../modele/DAO.class.php');
 
 class Api extends Rest
@@ -13,7 +13,8 @@ class Api extends Rest
     public function __construct()
     {   parent::__construct();      // appel du constructeur de la classe parente
     }
-
+    
+    
     // Cette méthode traite l'action demandée dans l'URI
     public function traiterRequete()
     {   // récupère le contenu du paramètre action et supprime les "/"
@@ -109,7 +110,7 @@ class Api extends Rest
     
     // Ce service permet à un utilisateur d'obtenir le détail d'un de ses parcours ou d'un parcours d'un membre qui l'autorise
     private function getunparcoursetsespoints()
-    {   include_once ("services/GetUnParcoursEtSesPoints.php");
+    {   include_once ("services/getunparcoursetsespoints.php");
     }
     
     // Ce service permet à un utilisateur de supprimer une autorisation qu'il avait accordée à un autre utilisateur

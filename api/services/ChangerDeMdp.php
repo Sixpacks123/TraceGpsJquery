@@ -1,7 +1,7 @@
 <?php
 // Projet TraceGPS - services web
 // fichier :  api/services/ChangerDeMdp.php
-// Dernière mise à jour : 3/7/2021 par dP
+// Dernière mise à jour : 3/7/2019 par Jim
 
 // Rôle : ce service permet à un utilisateur de changer son mot de passe
 // Le service web doit recevoir 5 paramètres :

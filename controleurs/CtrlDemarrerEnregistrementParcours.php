@@ -18,6 +18,7 @@ else
         $altitude = '0';
         $frequence = '';
         $message = '';
+        $envoiemail = 'off';
         $typeMessage = '';			// 2 valeurs possibles : 'information' ou 'avertissement'
         $themeFooter = $themeNormal;
         include_once ('vues/VueDemarrerEnregistrementParcours.php');
@@ -28,7 +29,7 @@ else
         if ( empty ($_POST ["txtLongitude"]) == true)  $longitude = "";  else   $longitude = $_POST ["txtLongitude"];
         if ( empty ($_POST ["txtAltitude"]) == true)  $altitude = "0";  else   $altitude = $_POST ["txtAltitude"];
         if ( empty ($_POST ["btnFrequence"]) == true)  $frequence = "";  else   $frequence = $_POST ["btnFrequence"];
-        
+        if ( empty ($_POST ["envoiemail"]) == true)  $envoiemail = "off";  else   $envoiemail = $_POST ["envoiemail"];
         if ($latitude == '' || $longitude == '' || $frequence == '')    // l'altitude n'est pas obligatoire
         {   // si les données sont incomplètes, réaffichage de la vue avec un message explicatif
             $message = 'Erreur : données incomplètes.';
@@ -43,7 +44,7 @@ else
             
             // récupération de l'id de l'utilisateur
             $idUtilisateurConsulte = $dao->getUnUtilisateur($pseudo)->getId();
-            
+
             // créer et enregistrer la trace
             $laTrace = new Trace(0, date('Y-m-d H:i:s', time()), null, false, $idUtilisateurConsulte);
             $ok = $dao->creerUneTrace($laTrace);
@@ -59,7 +60,14 @@ else
             $vitesse = 0;
             $unPoint = new PointDeTrace($idTrace, $idPoint, $latitude, $longitude, $altitude, $dateHeure, $rythmeCardio, $tempsCumule, $distanceCumulee, $vitesse);
             $ok = $dao->creerUnPointDeTrace($unPoint);
-            
+
+            if($envoiemail == 'on'){
+                //recupération du mail de l'utilisateur
+                $adrmail = $dao->getUnUtilisateur($pseudo)->getAdrMail();
+                $sujet ="tg";
+                $message= "test";
+                Outils::envoyerMail($adrmail, $sujet,$message,$ADR_MAIL_EMETTEUR);
+            }
             unset($dao);		// fermeture de la connexion à MySQL
             
             // on mémorise les paramètres dans des variables de session

@@ -23,7 +23,7 @@ $CLE_API = "AIzaSyA969VH2EiVQGfREB4EWKeT14IyDV0Pjjk";
 // valeur de la fréquence de réactualisation de l'affichage (en secondes) d'un parcours
 $FREQUENCE_AFFICHAGE = 60; // 60 sec ou 1 mn
 // adresse de l'émetteur lors d'un envoi de courriel
-$ADR_MAIL_EMETTEUR = "delasalle.sio.crib@gmail.com";
+$ADR_MAIL_EMETTEUR = "delasalle.sio.heurtault.a@gmail.com";
 // adresse de l'API web en localhost -----------------------------------------------------------------------
 $ADR_SERVICE_WEB = "http://localhost/ws-php-aubin/traceGpsjquery/api/";
 // adresse de l'API web chez OVH ---------------------------------------------------------------------------
