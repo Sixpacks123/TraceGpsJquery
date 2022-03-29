@@ -2,7 +2,7 @@
 // Projet TraceGPS - version web mobile
 // fichier : controleurs/CtrlEnvoyerPosition.php
 // Rôle : préparer la vue d'envoi périodique de la position
-// Dernière mise à jour : 01/11/2021 par dP
+// Dernière mise à jour : 6/1/2018 par JM CARTRON
 
 // on vérifie si le demandeur de cette action est bien authentifié
 if ( $_SESSION['niveauConnexion'] == 0) {
@@ -32,7 +32,7 @@ else {
         // connexion du serveur web à la base MySQL
         include ('modele/DAO.class.php');
         $dao = new DAO();
-        
+
         if (strtolower($stop) == 'stop') {
             // on termine la trace
             $ok =  $dao->terminerUneTrace($_SESSION['idTrace']);
@@ -52,7 +52,7 @@ else {
             $vitesse = 0;
             $unPoint = new PointDeTrace($idTrace, $idPoint, $latitude, $longitude, $altitude, $dateHeure, $rythmeCardio, $tempsCumule, $distanceCumulee, $vitesse);
             $ok = $dao->creerUnPointDeTrace($unPoint);
-            
+
             unset($dao);		// fermeture de la connexion à MySQL
             include ('vues/VueEnvoyerPosition.php');
         }

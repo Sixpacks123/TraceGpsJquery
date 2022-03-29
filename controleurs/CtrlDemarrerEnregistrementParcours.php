@@ -41,7 +41,7 @@ else
         {   // connexion du serveur web à la base MySQL
             include_once ('modele/DAO.class.php');
             $dao = new DAO();
-            
+
             // récupération de l'id de l'utilisateur
             $idUtilisateurConsulte = $dao->getUnUtilisateur($pseudo)->getId();
 
@@ -50,7 +50,7 @@ else
             $ok = $dao->creerUneTrace($laTrace);
             // récupération de l'id de la trace
             $idTrace = $laTrace->getId();
-            
+
             // créer et enregistrer le premier point
             $idPoint = 1;
             $dateHeure = date('Y-m-d H:i:s', time());
@@ -63,18 +63,19 @@ else
 
             if($envoiemail == 'on'){
                 //recupération du mail de l'utilisateur
-                $adrmail = $dao->getUnUtilisateur($pseudo)->getAdrMail();
-                $sujet ="tg";
-                $message= "test";
-                Outils::envoyerMail($adrmail, $sujet,$message,$ADR_MAIL_EMETTEUR);
+               // $adrmail = $dao->getUnUtilisateur($pseudo)->getAdrMail();
+                //$sujet ="tg";
+                //$message= "test";
+               // Outils::envoyerMail($adrmail, $sujet,$message,$ADR_MAIL_EMETTEUR);
+
             }
             unset($dao);		// fermeture de la connexion à MySQL
-            
+
             // on mémorise les paramètres dans des variables de session
             $_SESSION['frequence'] = $frequence;
             $_SESSION['idTrace'] = $idTrace;
             $_SESSION['idPoint'] = $idPoint;
-            
+
             // redirection vers la page d'envoi de la position
             header ("Location: index.php?action=EnvoyerPosition");
         }
