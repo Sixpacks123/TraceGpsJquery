@@ -2,8 +2,10 @@
 // Projet TraceGPS
 // fichier : modele/PointDeTrace.class.php
 // Rôle : la classe PointDeTrace représente un point de passage sur un parcours
-// Dernière mise à jour : 9/7/2021 par dPlanchet
+// Dernière mise à jour : 24/9/2019 par Moi
+
 include_once ('Point.class.php');
+
 class PointDeTrace extends Point
 {
     // ------------------------------------------------------------------------------------------------------
