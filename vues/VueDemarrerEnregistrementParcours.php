@@ -121,7 +121,7 @@
 					</div>
                     <div data-role="fieldcontain" data-type="horizontal" class="ui-hide-label">
                         <label for="envoieMail">Envoie mail</label>
-                        <input type="checkbox" name="envoieMail" id="envoieMail"  data-mini="true" <?php if ($envoiemail == 'on') echo 'checked'; ?>>
+                        <input type="checkbox" name="envoiemail" id="envoiemail"  data-mini="true" <?php if ($envoiemail == 'on') echo 'checked'; ?>>
                     </div>
 					<div data-role="fieldcontain">
 						<input type="submit" name="btnDemarrer" id="btnDemarrer" value="Démarrer l'enregistrement" data-mini="true">

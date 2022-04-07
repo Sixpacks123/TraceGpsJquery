@@ -20,7 +20,7 @@ else {
     
     // récupération de la liste des utilisateurs autorisés à l'aide de la méthode getLesUtilisateursAutorises de la classe DAO
     $lesUtilisateurs = $dao->getLesUtilisateursAutorises($idUtilisateurConsulte);
-    
+
     // mémorisation du nombre d'utilisateurs autorisés
     $nbReponses = sizeof($lesUtilisateurs);
     

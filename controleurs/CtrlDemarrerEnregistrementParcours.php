@@ -41,7 +41,7 @@ else
         {   // connexion du serveur web à la base MySQL
             include_once ('modele/DAO.class.php');
             $dao = new DAO();
-
+            
             // récupération de l'id de l'utilisateur
             $idUtilisateurConsulte = $dao->getUnUtilisateur($pseudo)->getId();
 
@@ -50,7 +50,7 @@ else
             $ok = $dao->creerUneTrace($laTrace);
             // récupération de l'id de la trace
             $idTrace = $laTrace->getId();
-
+            
             // créer et enregistrer le premier point
             $idPoint = 1;
             $dateHeure = date('Y-m-d H:i:s', time());
@@ -62,11 +62,19 @@ else
             $ok = $dao->creerUnPointDeTrace($unPoint);
 
             if($envoiemail == 'on'){
-                //recupération du mail de l'utilisateur
-               // $adrmail = $dao->getUnUtilisateur($pseudo)->getAdrMail();
-                //$sujet ="tg";
-                //$message= "test";
-               // Outils::envoyerMail($adrmail, $sujet,$message,$ADR_MAIL_EMETTEUR);
+                //recupération des utilisateur qui autorise
+                $lesUtilisateur = $dao->getLesUtilisateursAutorisant($idUtilisateurConsulte);
+
+                foreach ($lesUtilisateur as $unUtilisateur){
+                    $adrmail = $unUtilisateur->getAdrMail();
+                    $pseudoautorise = $unUtilisateur->getPseudo();
+                    $sujet ="test";
+                    $message= "Cher ou chère " . $pseudoautorise . " ,\n\n";
+                    $message.="Vous avez demandé à ". $pseudo." l'autorisation de consulter ses parcours.\n";
+                    $message.="" . $pseudo." vient de démarrer un nouveau parcours à ".$dateHeure.".";
+                    Outils::envoyerMail($adrmail, $sujet,$message,$ADR_MAIL_EMETTEUR);
+                }
+                }
 
             }
             unset($dao);		// fermeture de la connexion à MySQL
@@ -75,9 +83,9 @@ else
             $_SESSION['frequence'] = $frequence;
             $_SESSION['idTrace'] = $idTrace;
             $_SESSION['idPoint'] = $idPoint;
-
+            
             // redirection vers la page d'envoi de la position
             header ("Location: index.php?action=EnvoyerPosition");
         }
-    }
+
 }
